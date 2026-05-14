@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: my_store_backend
+    runtime: python
+    rootDir: my_store
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.15
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        value: django-insecure-s5rimnb8w9t+0bmadgvug!!dy)(9v=a!*wa-av37)az(r#qx(p
+      - key: ALLOWED_HOSTS
+        value: my_store_backend.onrender.com
