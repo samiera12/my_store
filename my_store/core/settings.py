@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-s5rimnb8w9t+0bmadgvug!!dy)(9v=a!*wa-av37)az(r#qx(p'
 DEBUG = True
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
 # Application definition
 
 INSTALLED_APPS = [
@@ -55,7 +55,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5500",  
     "http://127.0.0.1:5500",
-    "http://localhost:3000",
+    # "https://your-frontend.netlify.app",
     "null",
 ]
 
