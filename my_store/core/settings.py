@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-s5rimnb8w9t+0bmadgvug!!dy)(9v=a!*wa-av37)az(r#qx(p'
 DEBUG = True
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'my-store-vaa0.onrender.com']
 # Application definition
 
 INSTALLED_APPS = [
