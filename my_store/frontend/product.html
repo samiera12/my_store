@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">MyStore</a>
+  <div style="display:flex;gap:1.5rem;align-items:center">
+    <a href="cart.html" class="cart-link" style="color:#ccc;text-decoration:none;font-size:14px">
+      Cart <span id="cart-count"></span>
+    </a>
+    <div id="nav-auth"></div>
+  </div>
+</nav>
+<div class="container" id="product-detail">
+  <p class="loading">Loading product...</p>
+</div>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script>
+  updateNavbar();
+  updateCartCount();
+  const id = new URLSearchParams(location.search).get('id');
+
+  getProduct(id).then(p => {
+    document.title = p.name;
+    document.getElementById('product-detail').innerHTML = `
+      <a href="index.html" style="font-size:13px;color:#888;text-decoration:none">← Back to products</a>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.5rem">
+        <img src="${p.image_url || 'https://picsum.photos/400/300'}"
+          style="width:100%;border-radius:12px;object-fit:cover">
+        <div>
+          <h1 style="font-size:26px;margin-bottom:.5rem">${p.name}</h1>
+          <p style="color:#e63946;font-size:24px;font-weight:600;margin-bottom:1rem">
+            &#8377;${parseFloat(p.price).toFixed(2)}
+          </p>
+          <p style="color:#666;line-height:1.7;margin-bottom:1.5rem">
+            ${p.description || 'No description available.'}
+          </p>
+          <p style="font-size:13px;color:#888;margin-bottom:1rem">
+            Stock: ${p.stock_quantity}
+          </p>
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:1rem">
+            <label style="font-size:13px">Qty:</label>
+            <input type="number" id="qty" value="1" min="1" max="${p.stock_quantity}"
+              style="width:70px;padding:8px;border:1px solid #ddd;border-radius:8px">
+          </div>
+          ${p.stock_quantity > 0
+            ? `<button class="btn btn-primary"
+                onclick="addToCart({id:${p.id},name:'${p.name}',price:${p.price},image_url:'${p.image_url}'},
+                parseInt(document.getElementById('qty').value))">
+                Add to Cart
+               </button>`
+            : `<button class="btn btn-outline" disabled>Out of Stock</button>`
+          }
+        </div>
+      </div>
+    `;
+  });
+</script>
+</body>
+</html>

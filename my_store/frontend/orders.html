@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">MyStore</a>
+  <div style="display:flex;gap:1.5rem;align-items:center">
+    <a href="cart.html" class="cart-link" style="color:#ccc;text-decoration:none;font-size:14px">
+      Cart <span id="cart-count"></span>
+    </a>
+    <div id="nav-auth"></div>
+  </div>
+</nav>
+<div class="container">
+  <h1 class="page-title">My Orders</h1>
+  <div id="orders-list"></div>
+</div>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script>
+  requireAuth();
+  updateNavbar();
+  updateCartCount();
+  loadOrders();
+
+  async function loadOrders() {
+    const el = document.getElementById('orders-list');
+    const orders = await getOrders();
+    if (!orders.length) {
+      el.innerHTML = '<p class="empty">No orders yet. <a href="index.html">Start shopping</a></p>';
+      return;
+    }
+    el.innerHTML = orders.map(o => `
+      <div style="background:#fff;border-radius:12px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.08)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <div>
+            <h3 style="font-size:16px;font-weight:600">Order #${o.id}</h3>
+            <p style="font-size:12px;color:#888">${new Date(o.created_at).toLocaleDateString()}</p>
+          </div>
+          <div style="text-align:right">
+            <span style="background:#e8f5e9;color:#2e7d32;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500">
+              ${o.status}
+            </span>
+            <p style="font-size:18px;font-weight:600;margin-top:4px">&#8377;${parseFloat(o.total_price).toFixed(2)}</p>
+          </div>
+        </div>
+        <div style="border-top:1px solid #f0f0f0;padding-top:1rem">
+          ${o.items.map(i => `
+            <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:#555">
+              <span>${i.product_name} x ${i.quantity}</span>
+              <span>&#8377;${(i.unit_price * i.quantity).toFixed(2)}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+</script>
+</body>
+</html>

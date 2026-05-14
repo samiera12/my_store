@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">MyStore</a>
+  <div style="display:flex;gap:1.5rem;align-items:center">
+    <a href="cart.html" class="cart-link" style="color:#ccc;text-decoration:none;font-size:14px">
+      Cart <span id="cart-count"></span>
+    </a>
+    <div id="nav-auth"></div>
+  </div>
+</nav>
+<div class="container">
+  <h1 class="page-title">Your Cart</h1>
+  <div id="cart-items"></div>
+</div>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script>
+  updateNavbar();
+  updateCartCount();
+  renderCart();
+
+  function renderCart() {
+    const cart = getCart();
+    const el = document.getElementById('cart-items');
+    if (!cart.length) {
+      el.innerHTML = '<p class="empty">Your cart is empty. <a href="index.html">Shop now</a></p>';
+      return;
+    }
+    el.innerHTML = cart.map(i => `
+      <div class="cart-item">
+        <img src="${i.image || 'https://picsum.photos/200'}" alt="${i.name}">
+        <div class="info">
+          <h4>${i.name}</h4>
+          <p>&#8377;${i.price.toFixed(2)} x ${i.qty}</p>
+        </div>
+        <div>
+          <p style="font-weight:600">&#8377;${(i.price * i.qty).toFixed(2)}</p>
+          <button class="btn btn-danger"
+            style="margin-top:8px;padding:6px 12px;font-size:12px"
+            onclick="removeFromCart(${i.id}); renderCart(); updateCartCount()">
+            Remove
+          </button>
+        </div>
+      </div>
+    `).join('') + `
+    <div class="cart-summary">
+      <p class="total">Total: &#8377;${getCartTotal().toFixed(2)}</p>
+      <button class="btn btn-primary btn-block" onclick="checkout()">Place Order</button>
+    </div>`;
+  }
+
+  async function checkout() {
+    if (!isLoggedIn()) { window.location.href = 'login.html'; return; }
+    const items = getCart().map(i => ({ productId: i.id, quantity: i.qty }));
+    const { ok, data } = await placeOrder(items);
+    if (ok) {
+      clearCart();
+      alert('Order placed successfully! Order #' + data.id);
+      window.location.href = 'orders.html';
+    } else {
+      alert('Error: ' + (data.error || 'Could not place order.'));
+    }
+  }
+</script>
+</body>
+</html>

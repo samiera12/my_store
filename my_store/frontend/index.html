@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyStore</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">MyStore</a>
+  <div style="display:flex;gap:1.5rem;align-items:center">
+    <a href="cart.html" class="cart-link" style="color:#ccc;text-decoration:none;font-size:14px">
+      Cart <span id="cart-count"></span>
+    </a>
+    <div id="nav-auth"></div>
+  </div>
+</nav>
+<div class="container">
+  <h1 class="page-title">All Products</h1>
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Search products...">
+    <button onclick="searchProducts()">Search</button>
+  </div>
+  <div id="product-grid" class="product-grid">
+    <p class="loading">Loading products...</p>
+  </div>
+</div>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script>
+  updateNavbar();
+  updateCartCount();
+  loadProducts();
+
+  async function loadProducts(search = '') {
+    const grid = document.getElementById('product-grid');
+    grid.innerHTML = '<p class="loading">Loading...</p>';
+    const products = await getProducts(search);
+    if (!products.length) {
+      grid.innerHTML = '<p class="empty">No products found.</p>';
+      return;
+    }
+    grid.innerHTML = products.map(p => `
+      <div class="product-card" onclick="window.location='product.html?id=${p.id}'">
+        <img src="${p.image_url || 'https://picsum.photos/400/300'}" alt="${p.name}">
+        <div class="card-body">
+          <h3>${p.name}</h3>
+          <p class="price">&#8377;${parseFloat(p.price).toFixed(2)}</p>
+          <p class="stock">${p.stock_quantity > 0 ? p.stock_quantity + ' in stock' : 'Out of stock'}</p>
+          <button class="btn btn-primary"
+            onclick="event.stopPropagation(); addToCart({id:${p.id},name:'${p.name}',price:${p.price},image_url:'${p.image_url}'}, 1)">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function searchProducts() {
+    const q = document.getElementById('search-input').value.trim();
+    loadProducts(q);
+  }
+
+  document.getElementById('search-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') searchProducts();
+  });
+</script>
+</body>
+</html>
