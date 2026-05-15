@@ -55,7 +55,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5500",  
     "http://127.0.0.1:5500",
-    "https://snazzy-figolla-757755.netlify.app/",
+    "https://snazzy-figolla-757755.netlify.app",
     "null",
 ]
 
